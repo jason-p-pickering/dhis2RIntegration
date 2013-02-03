@@ -41,15 +41,10 @@
     <!-- SLIDES -->
       <slide class="" id="slide-1" style="background:;">
   <hgroup>
-    <h2>What do we mean by integration?</h2>
+    <h2>The R Inferno</h2>
   </hgroup>
   <article>
-    <ul>
-<li>The combination of two pieces of software into a single system (at least from the user perspective)</li>
-<li>DHIS2 is written in Java, but R is a seperate language. </li>
-<li>Somethings are easy to do in Java, some things are easy to do in R. </li>
-<li>Integration of this type can offer significant advantages, especially in terms of cost and risk mitigation.</li>
-</ul>
+    <p><img src="assets/img/r_inferno.png" height="500 px"/></p>
 
   </article>
   <!-- Presenter Notes -->
@@ -57,14 +52,14 @@
 
       <slide class="" id="slide-2" style="background:;">
   <hgroup>
-    <h2>What is R?</h2>
+    <h2>What is R anyway?</h2>
   </hgroup>
   <article>
     <ul>
 <li>R is freely available, open source statistical computing environment.</li>
 <li>R refers to both the computer programming language, as well as the software which can be used to create and run R scripts.</li>
-<li>It is not possible to describe the breadth of what R can do in this lecture, but there are numerous resouces available on the web.</li>
-<li>R is particularly well suited for (complex) statistical analysis and (advanced) visualization.</li>
+<li>It is not possible to describe the breadth of what R can do in this lecture, but there are numerous resources available on the web.</li>
+<li>R is particularly well suited for (complex) statistical analysis and (advanced) visualization and data manipulation.</li>
 <li>Its interactive programming environment encourages ad-hoc programming, but fully supports object-oriented programming structures.</li>
 <li><a href="http://cran.r-project.org/">http://cran.r-project.org/</a> is the main site. </li>
 </ul>
@@ -75,7 +70,39 @@
 
       <slide class="" id="slide-3" style="background:;">
   <hgroup>
-    <h2>A simple example</h2>
+    <h2>What do we mean by integration?</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li>The combination of two pieces of software into a single system (at least from the user perspective)</li>
+<li>DHIS2 is written in Java, but R is a separate language. </li>
+<li>Somethings are easy to do in Java, some things are easy to do in R. </li>
+<li>Integration of this type can offer significant advantages, especially in terms of cost and risk mitigation.</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>Why would we want to integrate DHIS2 and R?</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li>R offers the possibility to perform (advanced) statistical analysis.</li>
+<li>R offers the possibility to visualize data in ways not possible with DHIS2.</li>
+<li>Routine reports and tasks can be automated. </li>
+<li>R is used routinely for epidemiological and data quality analysis.</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-5" style="background:;">
+  <hgroup>
+    <h2>What can R do? A simple example</h2>
   </hgroup>
   <article>
     <pre><code class="r"># sample a normal distribution, with a mean of 5 and sd of 2, 100 times
@@ -95,7 +122,7 @@ lines(density(x), col = 1, lty = 2)
   <!-- Presenter Notes -->
 </slide>
 
-      <slide class="" id="slide-4" style="background:;">
+      <slide class="" id="slide-6" style="background:;">
   <hgroup>
     <h2>What just happened?</h2>
   </hgroup>
@@ -105,16 +132,14 @@ lines(density(x), col = 1, lty = 2)
 <li>We sorted them  with <code>sort</code></li>
 <li>We plotted them with <code>plot</code></li>
 <li>We added another layer to the plot with <code>lines</code></li>
-<li>We can save this file to a script, and then run it as a script, or we can type it into the R enviornment line by line.</li>
+<li>We can save this file to a script, and then run it as a script, or we can type it into the R environment line by line.</li>
 </ul>
-
-<hr>
 
   </article>
   <!-- Presenter Notes -->
 </slide>
 
-      <slide class="" id="slide-5" style="background:;">
+      <slide class="" id="slide-7" style="background:;">
   <hgroup>
     <h2>Why would we want to use R with DHIS2?</h2>
   </hgroup>
@@ -137,15 +162,34 @@ lines(density(x), col = 1, lty = 2)
   <!-- Presenter Notes -->
 </slide>
 
-      <slide class="" id="slide-6" style="background:;">
+      <slide class="" id="slide-8" style="background:;">
   <hgroup>
-    <h2>Example 1: Retreiving data with R and ODBC</h2>
+    <h2>Examples of how to use R with DHIS2.</h2>
+  </hgroup>
+  <article>
+    <ol>
+<li>Retreiving metadata directly from the database</li>
+<li>Retreiving data from the database with SQL</li>
+<li>Working with MyDatamat to make a trellis plot</li>
+<li>Getting data through the WebAPI</li>
+<li>Projecting population data and importing through the CSV importer</li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-9" style="background:;">
+  <hgroup>
+    <h2>Example 1: Retrieving data with R and ODBC</h2>
   </hgroup>
   <article>
     <pre><code class="r">library(RODBC)
-channel &lt;- odbcConnect(&quot;dhis2&quot;)
+con &lt;- odbcConnect(&quot;dhis2&quot;)
 sqlTest &lt;- c(&quot;SELECT  name FROM dataelement ORDER BY name LIMIT 5;&quot;)
-sqlQuery(channel, sqlTest)
+mydata &lt;- sqlQuery(con, sqlTest)
+odbcClose(con)
+head(mydata)
 </code></pre>
 
 <pre><code>##                                       name
@@ -156,19 +200,19 @@ sqlQuery(channel, sqlTest)
 ## 5 Albendazole given at ANC (2nd trimester)
 </code></pre>
 
-<p>All we did was connect to the DHIS2 database and retreive some data element names. </p>
+<p>All we did was connect to the DHIS2 database and retrieve some data element names. </p>
 
   </article>
   <!-- Presenter Notes -->
 </slide>
 
-      <slide class="" id="slide-7" style="background:;">
+      <slide class="" id="slide-10" style="background:;">
   <hgroup>
     <h2>Example 2: Analysis of ART data, by gender</h2>
   </hgroup>
   <article>
     <ul>
-<li>Suppose we have been asked to produce a plot of new ART acceptory by gender.</li>
+<li>Suppose we have been asked to produce a plot of new ART acceptor by gender.</li>
 <li>We look in the database, and see the data element &quot;ART new clients started on ARV&quot;</li>
 <li>It appears to be disaggregated by age AND gender</li>
 <li>We can write a query and get some data (not displayed here)</li>
@@ -190,7 +234,7 @@ sqlQuery(channel, sqlTest)
   <!-- Presenter Notes -->
 </slide>
 
-      <slide class="" id="slide-8" style="background:;">
+      <slide class="" id="slide-11" style="background:;">
   <hgroup>
     <h2>Lets reaggregate the data by gender</h2>
   </hgroup>
@@ -219,7 +263,7 @@ arv.sum
   <!-- Presenter Notes -->
 </slide>
 
-      <slide class="" id="slide-9" style="background:;">
+      <slide class="" id="slide-12" style="background:;">
   <hgroup>
     <h2>Why would we want to write a bunch of code to do this?</h2>
   </hgroup>
@@ -239,14 +283,14 @@ arv.sum
 
 <blockquote>
 <p>Basically, R allows you to automate a particular analysis, so that you can write it once, and always reproduce it in the future.<br>
-The power to automate particular analsyes is incredibly useful, time-saving, and allows you to show others what you have done.</p>
+The power to automate particular analyses is incredibly useful, time-saving, and allows you to show others what you have done.</p>
 </blockquote>
 
   </article>
   <!-- Presenter Notes -->
 </slide>
 
-      <slide class="" id="slide-10" style="background:;">
+      <slide class="" id="slide-13" style="background:;">
   <hgroup>
     <h2>Example 3: Working with MyDatamart</h2>
   </hgroup>
@@ -275,7 +319,7 @@ db &lt;- dbConnect(drv, dbPath)
   <!-- Presenter Notes -->
 </slide>
 
-      <slide class="" id="slide-11" style="background:;">
+      <slide class="" id="slide-14" style="background:;">
   <hgroup>
     <h2>Example 3: Working with MyDatamart, continued</h2>
   </hgroup>
@@ -306,7 +350,7 @@ colnames(Inds)
   <!-- Presenter Notes -->
 </slide>
 
-      <slide class="" id="slide-12" style="background:;">
+      <slide class="" id="slide-15" style="background:;">
   <hgroup>
     <h2>Example 3: Working with MyDatamart, continued</h2>
   </hgroup>
@@ -322,7 +366,7 @@ colnames(Inds)
   <!-- Presenter Notes -->
 </slide>
 
-      <slide class="" id="slide-13" style="background:;">
+      <slide class="" id="slide-16" style="background:;">
   <hgroup>
     <h2>Example 3: Subset and rearrange the data for ANC</h2>
   </hgroup>
@@ -349,7 +393,7 @@ ANC[1:3, ]
   <!-- Presenter Notes -->
 </slide>
 
-      <slide class="" id="slide-14" style="background:;">
+      <slide class="" id="slide-17" style="background:;">
   <hgroup>
     <h2>Example 3: Making a trellis plot</h2>
   </hgroup>
@@ -366,7 +410,7 @@ ANC[1:3, ]
   <!-- Presenter Notes -->
 </slide>
 
-      <slide class="" id="slide-15" style="background:;">
+      <slide class="" id="slide-18" style="background:;">
   <hgroup>
     <h2>Example 3: Conclusion</h2>
   </hgroup>
@@ -379,14 +423,14 @@ ANC[1:3, ]
 <li>We can share the script without friends, so that they can perform the same analysis</li>
 <li>The steps we took to reach the figure are clearly documented in the code. </li>
 </ul></li>
-<li>As you can see, R is a powerful tool for data manipulation and graphical visualisation. </li>
+<li>As you can see, R is a powerful tool for data manipulation and graphical visualization. </li>
 </ul>
 
   </article>
   <!-- Presenter Notes -->
 </slide>
 
-      <slide class="" id="slide-16" style="background:;">
+      <slide class="" id="slide-19" style="background:;">
   <hgroup>
     <h2>Example 4: Calculation of some statistics</h2>
   </hgroup>
@@ -403,7 +447,7 @@ ANC[1:3, ]
   <!-- Presenter Notes -->
 </slide>
 
-      <slide class="" id="slide-17" style="background:;">
+      <slide class="" id="slide-20" style="background:;">
   <hgroup>
     <h2>Example 4: Getting data through the WebAPI</h2>
   </hgroup>
@@ -426,7 +470,7 @@ mydata &lt;- read.table(textConnection(data), sep = &quot;,&quot;, header = T)
   <!-- Presenter Notes -->
 </slide>
 
-      <slide class="" id="slide-18" style="background:;">
+      <slide class="" id="slide-21" style="background:;">
   <hgroup>
     <h2>Example 4: Calculation of summary statistics of malnutrition</h2>
   </hgroup>
@@ -452,9 +496,9 @@ mydata &lt;- read.table(textConnection(data), sep = &quot;,&quot;, header = T)
   <!-- Presenter Notes -->
 </slide>
 
-      <slide class="" id="slide-19" style="background:;">
+      <slide class="" id="slide-22" style="background:;">
   <hgroup>
-    <h2>Summary of data extraction and manipluation with R</h2>
+    <h2>Summary of data extraction and manipulation with R</h2>
   </hgroup>
   <article>
     <ul>
@@ -473,7 +517,7 @@ mydata &lt;- read.table(textConnection(data), sep = &quot;,&quot;, header = T)
   <!-- Presenter Notes -->
 </slide>
 
-      <slide class="" id="slide-20" style="background:;">
+      <slide class="" id="slide-23" style="background:;">
   <hgroup>
     <h2>Example 5: Data transformation and importation into DHIS2</h2>
   </hgroup>
@@ -549,7 +593,7 @@ mydata &lt;- read.table(textConnection(data), sep = &quot;,&quot;, header = T)
   <!-- Presenter Notes -->
 </slide>
 
-      <slide class="" id="slide-21" style="background:;">
+      <slide class="" id="slide-24" style="background:;">
   <hgroup>
     <h2>Example 5: This is what we need</h2>
   </hgroup>
@@ -565,7 +609,7 @@ mydata &lt;- read.table(textConnection(data), sep = &quot;,&quot;, header = T)
   <!-- Presenter Notes -->
 </slide>
 
-      <slide class="" id="slide-22" style="background:;">
+      <slide class="" id="slide-25" style="background:;">
   <hgroup>
     <h2>Example 5: First lets get the data from DHIS2</h2>
   </hgroup>
@@ -588,21 +632,21 @@ mydata &lt;- read.table(textConnection(data), sep = &quot;,&quot;, header = T)
 ##  $ Organisation.unit.code       : logi  NA NA NA NA NA NA ...
 ##  $ Indicator.description        : logi  NA NA NA NA NA NA ...
 ##  $ Organisation.unit.description: logi  NA NA NA NA NA NA ...
-##  $ Reporting.month              : int  2012 2012 2012 2012 2012 2012 2012 2012 2012 2012 ...
+##  $ Reporting.month              : int  2013 2013 2013 2013 2013 2013 2013 2013 2013 2013 ...
 ##  $ Organisation.unit.parameter  : logi  NA NA NA NA NA NA ...
 ##  $ Organisation.unit.is.parent  : chr  &quot;No&quot; &quot;No&quot; &quot;No&quot; &quot;No&quot; ...
-##  $ X2008                        : logi  NA NA NA NA NA NA ...
 ##  $ X2009                        : num  15132 4846 3256 NA 3481 ...
 ##  $ X2010                        : num  15504 4965 3335 NA 3566 ...
 ##  $ X2011                        : logi  NA NA NA NA NA NA ...
 ##  $ X2012                        : logi  NA NA NA NA NA NA ...
+##  $ X2013                        : logi  NA NA NA NA NA NA ...
 </code></pre>
 
   </article>
   <!-- Presenter Notes -->
 </slide>
 
-      <slide class="" id="slide-23" style="background:;">
+      <slide class="" id="slide-26" style="background:;">
   <hgroup>
     <h2>Example 5: Working up the data</h2>
   </hgroup>
@@ -633,7 +677,7 @@ write.csv(pop, file = &quot;population.csv&quot;, row.names = FALSE)
   <!-- Presenter Notes -->
 </slide>
 
-      <slide class="" id="slide-24" style="background:;">
+      <slide class="" id="slide-27" style="background:;">
   <hgroup>
     <h2>Example 5: Summary</h2>
   </hgroup>
@@ -642,7 +686,7 @@ write.csv(pop, file = &quot;population.csv&quot;, row.names = FALSE)
 <tr>
 <td>
 <ol>
-<li> In this extended example, we showed how to retreive data from the DHIS2 Web API</li>
+<li> In this extended example, we showed how to retrieve data from the DHIS2 Web API</li>
 <li> We reshaped the data , extracting columns of interest</li>
 <li> We then uploaded the values back to DHIS2.</li>
 </ol>
@@ -657,21 +701,137 @@ write.csv(pop, file = &quot;population.csv&quot;, row.names = FALSE)
   <!-- Presenter Notes -->
 </slide>
 
-      <slide class="" id="slide-25" style="background:;">
+      <slide class="" id="slide-28" style="background:;">
   <hgroup>
     <h2>Is this really integration?</h2>
   </hgroup>
   <article>
     <ul>
 <li>Well, it could be argued that it is not</li>
-<li>Integration is very broad, from very loose to much more tight.</li>
-<li>Other approaches offer tigher integration
+<li>Integration is very broad in scope..loose versus tight</li>
+<li>Other approaches offer tighter integration
 
 <ul>
-<li>Rscript </li>
+<li><a href="Rscript">http://stat.ethz.ch/R-manual/R-patched/library/utils/html/Rscript.html</a> - Execute R externally on the system</li>
+<li><a href="Java-R%20Interface">http://www.rforge.net/JRI/</a> library - Call R code from Java</li>
+<li><a href="PL/R">http://www.joeconway.com/plr/</a>- Call R code from Postgresql</li>
 </ul></li>
 </ul>
 
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-29" style="background:;">
+  <hgroup>
+    <h2>Why consider to use R with DHIS2?</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li>DHIS2 collects and manages data extremely well, but is limited in how it can analyze it.</li>
+<li>Why consider R when there are commercial alternatives like SAS, STATA and SPSS (et. al. )?
+
+<ul>
+<li>One big reason ... it is free. </li>
+<li>R can do everything the commercial packages can do, and even more. </li>
+<li>It allows you to share your work with other people. </li>
+</ul></li>
+<li>Essentially unlimited possibilities for how to analyze/ data from DHIS2. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-30" style="background:;">
+  <hgroup>
+    <h2>Why would you may not want to use R with DHIS2?</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li>R is less a software package than a programming language.</li>
+<li>R has a very steep learning curve. </li>
+<li>R programmers are in short supply (esp in India)</li>
+<li>R offers no commerical support or warranty.</li>
+<li>R has some issues with &quot;big data&quot;.</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-31" style="background:;">
+  <hgroup>
+    <h2>Pros and cons</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li><strong><em>The good</em></strong>
+
+<ul>
+<li>Some things are easier to code in high level languages</li>
+<li>R has extensive built-in facilities for data manipulation</li>
+<li>Risk mitigation</li>
+</ul></li>
+<li><strong><em>The bad</em></strong>
+
+<ul>
+<li>Mixing of languages can complicate the development process</li>
+<li>Scalability and performance</li>
+<li>Complicated deployment requirements</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-32" style="background:;">
+  <hgroup>
+    <h2>Practical uses for R and DHIS2 together</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li>These are taken from real uses of DHIS2 and R. 
+
+<ul>
+<li>Importation/transformation of legacy data into DHIS2</li>
+<li>Production of statistical reports</li>
+<li>Automated sending of SMS alerts based on threshold alerts.</li>
+<li>Web scraping/automated import of data into DHIS2.</li>
+<li>Projection of population/baseline data.</li>
+<li>Modelling of DHIS2 data to deal with reporting completeness. </li>
+<li>???</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-33" style="background:;">
+  <hgroup>
+    <h2>References</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li><a href="R&#x27;s%20main%20website">http://cran.r-project.org/</a></li>
+<li><a href="The%20R%20inferno.">http://www.burns-stat.com/pages/Tutor/R_inferno.pdf</a> A look at how R is different. Very technical. </li>
+<li><a href="GGplot%202%20is%20a%20powerful%20visualizaiton%20package">http://ggplot2.org/</a></li>
+<li><a href="Further%20examples%20on%20the%20use%20of%20R%20with%20DHIS2">http://dhis2.org/doc/snapshot/en/user/html/apc.html</a></li>
+<li><a href="This%20presentation">https://github.com/jason-p-pickering/dhis2RIntegration</a></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-34" style="background:;">
+  <hgroup>
+    
+  </hgroup>
+  <article>
+    
   </article>
   <!-- Presenter Notes -->
 </slide>

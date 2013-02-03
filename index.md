@@ -10,26 +10,43 @@ widgets     : [mathjax]            # {mathjax, quiz, bootstrap}
 mode        : selfcontained # {standalone, draft}
 ---
 
-## What do we mean by integration?
+## The R Inferno
 
-* The combination of two pieces of software into a single system (at least from the user perspective)
-* DHIS2 is written in Java, but R is a seperate language. 
-* Somethings are easy to do in Java, some things are easy to do in R. 
-* Integration of this type can offer significant advantages, especially in terms of cost and risk mitigation.
+<img src="assets/img/r_inferno.png" height="500 px"/>
 
 ---
 
-## What is R?
+## What is R anyway?
+
 * R is freely available, open source statistical computing environment.
 * R refers to both the computer programming language, as well as the software which can be used to create and run R scripts.
-* It is not possible to describe the breadth of what R can do in this lecture, but there are numerous resouces available on the web.
-* R is particularly well suited for (complex) statistical analysis and (advanced) visualization.
+* It is not possible to describe the breadth of what R can do in this lecture, but there are numerous resources available on the web.
+* R is particularly well suited for (complex) statistical analysis and (advanced) visualization and data manipulation.
 * Its interactive programming environment encourages ad-hoc programming, but fully supports object-oriented programming structures.
 * [http://cran.r-project.org/](http://cran.r-project.org/) is the main site. 
 
 ---
 
-## A simple example
+## What do we mean by integration?
+
+* The combination of two pieces of software into a single system (at least from the user perspective)
+* DHIS2 is written in Java, but R is a separate language. 
+* Somethings are easy to do in Java, some things are easy to do in R. 
+* Integration of this type can offer significant advantages, especially in terms of cost and risk mitigation.
+
+---
+
+## Why would we want to integrate DHIS2 and R?
+
+* R offers the possibility to perform (advanced) statistical analysis.
+* R offers the possibility to visualize data in ways not possible with DHIS2.
+* Routine reports and tasks can be automated. 
+* R is used routinely for epidemiological and data quality analysis.
+
+---
+
+## What can R do? A simple example
+
 
 ```r
 # sample a normal distribution, with a mean of 5 and sd of 2, 100 times
@@ -49,17 +66,17 @@ This is just a trivial example of how to simulate data and plot it with R.
 ---
 
 ## What just happened?
+
 * We generated some random variates with `rnorm`
 * We sorted them  with `sort`
 * We plotted them with `plot`
 * We added another layer to the plot with `lines`
-* We can save this file to a script, and then run it as a script, or we can type it into the R enviornment line by line.
-  
----
+* We can save this file to a script, and then run it as a script, or we can type it into the R environment line by line.
 
 ---
 
 ## Why would we want to use R with DHIS2?
+
 * DHIS2 provides a powerful data collection, management and storage system.
 * It can perform basic analysis, but lacks advanced analysis capabilities. 
 * R is free and open source, and runs on multiple platforms (like DHIS2).
@@ -71,13 +88,27 @@ This is just a trivial example of how to simulate data and plot it with R.
 
 ---
 
-## Example 1: Retreiving data with R and ODBC
+## Examples of how to use R with DHIS2.
+
+  1. Retreiving metadata directly from the database
+  2. Retreiving data from the database with SQL
+  3. Working with MyDatamat to make a trellis plot
+  4. Getting data through the WebAPI
+  5. Projecting population data and importing through the CSV importer
+
+---
+
+
+## Example 1: Retrieving data with R and ODBC
+
 
 ```r
 library(RODBC)
-channel <- odbcConnect("dhis2")
+con <- odbcConnect("dhis2")
 sqlTest <- c("SELECT  name FROM dataelement ORDER BY name LIMIT 5;")
-sqlQuery(channel, sqlTest)
+mydata <- sqlQuery(con, sqlTest)
+odbcClose(con)
+head(mydata)
 ```
 
 ```
@@ -90,12 +121,13 @@ sqlQuery(channel, sqlTest)
 ```
 
 
-All we did was connect to the DHIS2 database and retreive some data element names. 
+All we did was connect to the DHIS2 database and retrieve some data element names. 
 
 ---
 
 ## Example 2: Analysis of ART data, by gender
-* Suppose we have been asked to produce a plot of new ART acceptory by gender.
+
+* Suppose we have been asked to produce a plot of new ART acceptor by gender.
 * We look in the database, and see the data element "ART new clients started on ARV"
 * It appears to be disaggregated by age AND gender
 * We can write a query and get some data (not displayed here)
@@ -140,6 +172,7 @@ arv.sum
 ---
 
 ## Why would we want to write a bunch of code to do this?
+
 * Why not just do the analysis in Excel?
   * We could, but what if we need to do it again with new data?
 * Why not use the _categorystructure table to get the right category options?
@@ -147,11 +180,12 @@ arv.sum
 
 
 >Basically, R allows you to automate a particular analysis, so that you can write it once, and always reproduce it in the future.  
->The power to automate particular analsyes is incredibly useful, time-saving, and allows you to show others what you have done.
+>The power to automate particular analyses is incredibly useful, time-saving, and allows you to show others what you have done.
 
 ---
 
 ## Example 3: Working with MyDatamart
+
 * Suppose we have been asked to compare Antenatal coverage (1,2,3) by province in Sierra Leone over the last 12 months. 
 * Suppose further we do not have direct access to the DHIS2 database server, but rather only through MyDatamart (which is quite likely)
 
@@ -207,6 +241,7 @@ colnames(Inds)
 ---
 
 ## Example 3: Working with MyDatamart, continued
+
 * Looks like we have a lot of columns and indicators, but only a few which we are really interested in. 
 * Looks like we have a lot of indicators, only a few of which we are really interested in. 
 * We see from the colnames command that there is an column called "indshort" which looks like it contains some indicator names.
@@ -215,6 +250,7 @@ colnames(Inds)
 ---
 
 ## Example 3: Subset and rearrange the data for ANC
+
 
 ```r
 # Grep out the indicators we want
@@ -238,7 +274,9 @@ ANC[1:3, ]
 
 
 ---
+
 ## Example 3: Making a trellis plot
+
 
 ```r
 xyplot(value ~ month | ou2, data = ANC, type = "a", main = "District ANC Comparison Sierra Leone 2011", 
@@ -252,15 +290,17 @@ xyplot(value ~ month | ou2, data = ANC, type = "a", main = "District ANC Compari
 ---
 
 ## Example 3: Conclusion
+
 * Again, you are asking yourself, why write code for all of this?
   * Well, we only have to write the code once, and next time someone asks us for the analysis, we just rerun the script. 
   * We can share the script without friends, so that they can perform the same analysis
   * The steps we took to reach the figure are clearly documented in the code. 
-* As you can see, R is a powerful tool for data manipulation and graphical visualisation. 
+* As you can see, R is a powerful tool for data manipulation and graphical visualization. 
 
 ---
 
 ## Example 4: Calculation of some statistics
+
 * R has extremely advanced features for performing statistical analysis. 
 * Since there are so many packages out there, we do not need to write a lot of code. 
 * Let's suppose we have been asked for some summary statistics on severe malnutrition in Sierra Leone in 2011.
@@ -270,6 +310,7 @@ xyplot(value ~ month | ou2, data = ANC, type = "a", main = "District ANC Compari
 ---
 
 ## Example 4: Getting data through the WebAPI
+
 
 ```r
 require(RCurl)
@@ -290,6 +331,7 @@ mydata <- read.table(textConnection(data), sep = ",", header = T)
 ----
 
 ## Example 4: Calculation of summary statistics of malnutrition
+
 * Lets calculate the summary statistics
 
 ```r
@@ -308,7 +350,8 @@ summary(mydata$Severe.malnutrition.rate)
 
 ---
 
-## Summary of data extraction and manipluation with R
+## Summary of data extraction and manipulation with R
+
 * Many many more examples are possible
 * R can get data from DHIS2 in a number of ways
   * Directly from the database
@@ -319,6 +362,7 @@ summary(mydata$Severe.malnutrition.rate)
 ---
 
 ## Example 5: Data transformation and importation into DHIS2
+
 <table>
 
 <thead>
@@ -398,6 +442,7 @@ summary(mydata$Severe.malnutrition.rate)
 ---
 
 ## Example 5: First lets get the data from DHIS2
+
 * Same as example 4, but just a different URL
 
 
@@ -418,20 +463,21 @@ str(mydata)
 ##  $ Organisation.unit.code       : logi  NA NA NA NA NA NA ...
 ##  $ Indicator.description        : logi  NA NA NA NA NA NA ...
 ##  $ Organisation.unit.description: logi  NA NA NA NA NA NA ...
-##  $ Reporting.month              : int  2012 2012 2012 2012 2012 2012 2012 2012 2012 2012 ...
+##  $ Reporting.month              : int  2013 2013 2013 2013 2013 2013 2013 2013 2013 2013 ...
 ##  $ Organisation.unit.parameter  : logi  NA NA NA NA NA NA ...
 ##  $ Organisation.unit.is.parent  : chr  "No" "No" "No" "No" ...
-##  $ X2008                        : logi  NA NA NA NA NA NA ...
 ##  $ X2009                        : num  15132 4846 3256 NA 3481 ...
 ##  $ X2010                        : num  15504 4965 3335 NA 3566 ...
 ##  $ X2011                        : logi  NA NA NA NA NA NA ...
 ##  $ X2012                        : logi  NA NA NA NA NA NA ...
+##  $ X2013                        : logi  NA NA NA NA NA NA ...
 ```
 
 
 ---
 
 ## Example 5: Working up the data
+
 
 ```r
 pop <- mydata[, c("Indicator.UID", "Organisation.unit.UID", "X2010")]
@@ -460,11 +506,12 @@ write.csv(pop, file = "population.csv", row.names = FALSE)
 ---
 
 ## Example 5: Summary
+
 <table>
 <tr>
 <td>
 <ol>
-<li> In this extended example, we showed how to retreive data from the DHIS2 Web API</li>
+<li> In this extended example, we showed how to retrieve data from the DHIS2 Web API</li>
 <li> We reshaped the data , extracting columns of interest</li>
 <li> We then uploaded the values back to DHIS2.</li>
 </ol>
@@ -475,11 +522,72 @@ write.csv(pop, file = "population.csv", row.names = FALSE)
 </tr>
 </table>
 
-
 ---
 
 ## Is this really integration?
+
 * Well, it could be argued that it is not
-* Integration is very broad, from very loose to much more tight.
-* Other approaches offer tigher integration
-  * Rscript 
+* Integration is very broad in scope..loose versus tight
+* Other approaches offer tighter integration
+  * [http://stat.ethz.ch/R-manual/R-patched/library/utils/html/Rscript.html](Rscript) - Execute R externally on the system
+  * [http://www.rforge.net/JRI/](Java-R Interface) library - Call R code from Java
+  * [http://www.joeconway.com/plr/](PL/R)- Call R code from Postgresql
+
+---
+
+## Why consider to use R with DHIS2?
+
+* DHIS2 collects and manages data extremely well, but is limited in how it can analyze it.
+* Why consider R when there are commercial alternatives like SAS, STATA and SPSS (et. al. )?
+  * One big reason ... it is free. 
+  * R can do everything the commercial packages can do, and even more. 
+  * It allows you to share your work with other people. 
+* Essentially unlimited possibilities for how to analyze/ data from DHIS2. 
+
+---
+
+## Why would you may not want to use R with DHIS2?
+
+* R is less a software package than a programming language.
+* R has a very steep learning curve. 
+* R programmers are in short supply (esp in India)
+* R offers no commerical support or warranty.
+* R has some issues with "big data".
+
+---
+
+## Pros and cons
+
+* ___The good___
+  * Some things are easier to code in high level languages
+  * R has extensive built-in facilities for data manipulation
+  * Risk mitigation
+* ___The bad___
+  * Mixing of languages can complicate the development process
+  * Scalability and performance
+  * Complicated deployment requirements
+
+---
+
+## Practical uses for R and DHIS2 together
+
+* These are taken from real uses of DHIS2 and R. 
+  * Importation/transformation of legacy data into DHIS2
+  * Production of statistical reports
+  * Automated sending of SMS alerts based on threshold alerts.
+  * Web scraping/automated import of data into DHIS2.
+  * Projection of population/baseline data.
+  * Modelling of DHIS2 data to deal with reporting completeness. 
+  * ???
+
+---
+
+## References
+
+* [http://cran.r-project.org/](R's main website)
+* [http://www.burns-stat.com/pages/Tutor/R_inferno.pdf](The R inferno.) A look at how R is different. Very technical. 
+* [http://ggplot2.org/](GGplot 2 is a powerful visualizaiton package)
+* [http://dhis2.org/doc/snapshot/en/user/html/apc.html](Further examples on the use of R with DHIS2)
+* [https://github.com/jason-p-pickering/dhis2RIntegration](This presentation)
+
+---
